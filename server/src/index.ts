@@ -8,6 +8,14 @@ import {
 } from "./controllers/TodoController";
 
 const server = http.createServer((req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.setHeader("Access-Control-Request-Method", "*");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "OPTIONS, GET, POST, PUT, PATCH, DELETE"
+  );
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Headers", "*");
   if (req.url === "/api/todos" && req.method === "GET") {
     getTodos(req, res);
   } else if (req.url?.match(/\/api\/todos\/([0-9]+)/) && req.method === "GET") {
