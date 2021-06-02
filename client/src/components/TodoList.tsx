@@ -1,21 +1,22 @@
 import * as React from "react";
-import ITodo from "../interfaces/Todo.interface";
+import { useSelector } from "react-redux";
 import Todo from "./Todo";
 
-interface Props {
-  todos: ITodo[];
-}
+interface Props {}
 
-const TodoList: React.FC<Props> = ({ todos }) => {
+const TodoList: React.FC<Props> = () => {
+  const todos = useSelector((state: any) => state.todos);
   return (
     <div className="main">
-      <input className="toggle-all" />
-      <label htmlFor="toggle-all"></label>
-      <ul className="todo-list">
-        {todos.map((todo) => (
-          <Todo key={todo.id} toDo={todo} />
-        ))}
-      </ul>
+      {todos ? (
+        <ul className="todo-list">
+          {todos.map((todo: any) => (
+            <Todo key={todo.id} todo={todo} />
+          ))}
+        </ul>
+      ) : (
+        "loading..."
+      )}
     </div>
   );
 };

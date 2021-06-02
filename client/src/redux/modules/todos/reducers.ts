@@ -1,30 +1,31 @@
+import ITodo from "../../../interfaces/Todo.interface";
 import {
-  TODOS_ADD_REQUEST,
-  TODOS_COMPLETE_REQUEST,
-  TODOS_EDIT_REQUEST,
-  TODOS_FETCH_REQUEST,
+  TODOS_ADD_SUCCESS,
+  TODOS_DELETE_SUCCESS,
   TODOS_FETCH_SUCCESS,
-  TODOS_REMOVE_COMPLETED_REQUEST,
-  TODOS_REMOVE_REQUEST,
+  TODOS_UPDATE_SUCCESS,
 } from "./actions";
 
-const todoReducers = (state = {}, action: any) => {
+const todoReducers = (state = [], action: any) => {
   switch (action.type) {
-    case TODOS_FETCH_REQUEST:
-    case TODOS_ADD_REQUEST:
-    case TODOS_REMOVE_REQUEST:
-    case TODOS_COMPLETE_REQUEST:
-    case TODOS_REMOVE_COMPLETED_REQUEST:
-    case TODOS_EDIT_REQUEST:
-      return {
-        ...state,
-      };
     case TODOS_FETCH_SUCCESS:
-      return {
+      return [...state, ...action.payload];
+    case TODOS_ADD_SUCCESS:
+      return [
         ...state,
-        data: action.payload,
-      };
-
+        {
+          ...action.payload,
+        },
+      ];
+    case TODOS_UPDATE_SUCCESS:
+      return state.map((t: ITodo) => {
+        if (t.id === action.payload.id) {
+          return action.payload;
+        }
+        return t;
+      });
+    case TODOS_DELETE_SUCCESS:
+      return state.filter((t: ITodo) => t.id !== action.payload);
     default:
       return state;
   }

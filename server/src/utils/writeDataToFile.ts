@@ -1,7 +1,7 @@
 import * as fs from "fs";
+import path from "path";
 
-const dataFolder =
-  "D:/Dev/tutorials/redux-observable-todolist/server/src/data/";
+const dataFolder = `${path.resolve("src")}/data/`;
 
 const writeDataToFile = (fileName: string, content: any) => {
   fs.writeFileSync(dataFolder + fileName, JSON.stringify(content), {

@@ -1,73 +1,56 @@
 import { combineEpics, ofType } from "redux-observable";
+import { from } from "rxjs";
 import { map, mergeMap } from "rxjs/operators";
 import * as Api from "../../../api/todos";
-import { TODOS_FETCH_REQUEST, TODOS_FETCH_SUCCESS } from "./actions";
+import {
+  addTodoSuccess,
+  deleteTodoSuccess,
+  fetchTodosSuccess,
+  TODOS_ADD_REQUEST,
+  TODOS_DELETE_REQUEST,
+  TODOS_FETCH_REQUEST,
+  TODOS_UPDATE_REQUEST,
+  updateTodoSuccess,
+} from "./actions";
 
 const fetchTodos = (action$: any) =>
   action$.pipe(
     ofType(TODOS_FETCH_REQUEST),
-    mergeMap(async () => await Api.fetchTodos()),
-    map((response) => {
-      console.log(response);
-      return { type: TODOS_FETCH_SUCCESS, payload: response };
-    })
+    mergeMap(() =>
+      from(Api.fetchTodos()).pipe(
+        map((response) => fetchTodosSuccess(response.data))
+      )
+    )
   );
 
-// const addTodo = action$ =>
-//   action$.ofType(TODOS_ADD_REQUEST)
-//     .mergeMap(action =>
-//       ajax.post('http://localhost:3001/todos', {
-//         text: action.text,
-//         completed: false,
-//       }, { 'Content-Type': 'application/json' })
-//         .map(({ response }) => ({ type: TODOS_ADD_SUCCESS, id: response.id, text: action.text }))
-//         .catch(createErrorAction('Failed to add a new task')),
-//     );
+const addTodo = (action$: any) =>
+  action$.pipe(
+    ofType(TODOS_ADD_REQUEST),
+    mergeMap((action: any) =>
+      from(Api.addTodo(action.title)).pipe(
+        map((response) => addTodoSuccess(response.data))
+      )
+    )
+  );
 
-// const removeTodo = action$ =>
-//   action$.ofType(TODOS_REMOVE_REQUEST)
-//     .mergeMap(action =>
-//       ajax.delete(`http://localhost:3001/todos/${action.id}`)
-//         .map(() => ({ type: TODOS_REMOVE_SUCCESS, id: action.id }))
-//         .catch(createErrorAction(`Failed to remove task #${action.id}`)),
-//     );
+const updateTodo = (action$: any) =>
+  action$.pipe(
+    ofType(TODOS_UPDATE_REQUEST),
+    mergeMap((action: any) =>
+      from(Api.updateTodo(action.id, action.title, action.isDone)).pipe(
+        map((response) => updateTodoSuccess(response.data))
+      )
+    )
+  );
 
-// const completeTodo = action$ =>
-//   action$.ofType(TODOS_COMPLETE_REQUEST)
-//     .mergeMap(action =>
-//       ajax.patch(`http://localhost:3001/todos/${action.id}`, {
-//         completed: !action.completed,
-//       }, { 'Content-Type': 'application/json' })
-//         .map(() => ({ type: TODOS_COMPLETE_SUCCESS, id: action.id }))
-//         .catch(createErrorAction(`Failed to mark task #${action.id} as completed`)),
-//     );
+const deleteTodo = (action$: any) =>
+  action$.pipe(
+    ofType(TODOS_DELETE_REQUEST),
+    mergeMap((action: any) =>
+      from(Api.deleteTodo(action.id)).pipe(
+        map((response) => deleteTodoSuccess(response.data.id))
+      )
+    )
+  );
 
-// const removeCompletedTodos = (action$, { getState }) =>
-//   action$.ofType(TODOS_REMOVE_COMPLETED_REQUEST)
-//     .mergeMap(() => Observable.forkJoin(
-//         ...getState().todos.data.filter(todo => todo.completed).map(todo =>
-//           ajax.delete(`http://localhost:3001/todos/${todo.id}`),
-//         ),
-//       )
-//       .map(() => ({ type: TODOS_REMOVE_COMPLETED_SUCCESS }))
-//       .catch(createErrorAction('Failed to remove all completed tasks')),
-//     );
-
-// const editTodo = action$ =>
-//   action$.ofType(TODOS_EDIT_REQUEST)
-//     .mergeMap(action =>
-//       ajax.patch(`http://localhost:3001/todos/${action.id}`, {
-//         text: action.text,
-//       }, { 'Content-Type': 'application/json' })
-//         .map(() => ({ type: TODOS_EDIT_SUCCESS, id: action.id, text: action.text }))
-//         .catch(createErrorAction(`Failed to edit task #${action.id}`)),
-//     );
-
-export default combineEpics(
-  fetchTodos
-  // addTodo,
-  // removeTodo,
-  // completeTodo,
-  // removeCompletedTodos,
-  // editTodo,
-);
+export default combineEpics(fetchTodos, addTodo, updateTodo, deleteTodo);

@@ -7,7 +7,7 @@ import getTodoData from "../utils/getTodoData";
  *  @description Get all todos
  *  @route GET: /api/todos
  */
-export const getTodos = async (req: IncomingMessage, res: ServerResponse) => {
+export const getTodos = async (_req: IncomingMessage, res: ServerResponse) => {
   try {
     const todos = await TodoModel.findAll();
     res.writeHead(200, { "Content-Type": "application/json" });
@@ -24,7 +24,7 @@ export const getTodos = async (req: IncomingMessage, res: ServerResponse) => {
  *  @route GET: /api/todo/:id
  */
 export const getTodo = async (
-  req: IncomingMessage,
+  _req: IncomingMessage,
   res: ServerResponse,
   id: string
 ) => {
@@ -99,7 +99,7 @@ export const updateTodo = async (
  *  @route DELETE: /api/todo/:id
  */
 export const deleteTodo = async (
-  req: IncomingMessage,
+  _req: IncomingMessage,
   res: ServerResponse,
   id: string
 ) => {
@@ -111,7 +111,9 @@ export const deleteTodo = async (
     } else {
       await TodoModel.deleteById(id);
       res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ message: `Product ${id} has been deleted` }));
+      res.end(
+        JSON.stringify({ id, message: `Product ${id} has been deleted` })
+      );
     }
   } catch (err) {
     console.error(err);

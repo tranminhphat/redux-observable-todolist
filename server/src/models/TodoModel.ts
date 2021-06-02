@@ -10,7 +10,7 @@ export const findAll = () => {
 
 export const findById = (id: string) => {
   return new Promise<ITodo | void>((resolve, reject) => {
-    const todo = todos.find((p) => p.id === id);
+    const todo = todos.find((p: ITodo) => p.id === id);
     if (todo) {
       resolve(todo);
     }
@@ -31,8 +31,8 @@ export const updateById = (
   todo: { title: string; isDone: string }
 ) => {
   return new Promise<ITodo>((resolve, _) => {
-    const index = todos.findIndex((p) => p.id === id);
-    if (index) {
+    const index = todos.findIndex((p: ITodo) => p.id === id);
+    if (index !== -1) {
       todos[index] = { id, ...todo };
       writeDataToFile("todo.json", todos);
       resolve(todos[index]);
